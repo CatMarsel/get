@@ -8,28 +8,35 @@ class PWM_DAC:
         self.verbose=verbose
         self.dr = dr
 
+        self.pwm=None
+
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.gpio_pin, GPIO.OUT, initial = 0)
+
+        self.pwm=GPIO.PWM(self.gpio_pin, self.pwm_f)
+        self.pwm.start(0)
+        
     
     def deinit(self):
-        GPIO.output(self.gpio_pin, 0)
+        self.pwm.stop()
         GPIO.cleanup()
     
     def set_voltage(self, v):
-        if not (0.0<=voltage<=self.dr):
+        if not (0.0<=v<=self.dr):
             print(f"Out of range {self.dr:.2f}")
             print("Setting 0.0")
             return 0
-        d=self.dr/100.0
-        pwm=GPIO.PWM(self.gpio_pin, self.pwm_f)
-        a=v/d
-        pwm.start(a)
+        else:
+            
+            print((v/self.dr)*100.0)
+
+            self.pwm.ChangeDutyCycle((v/self.dr)*100.0)
 
 
 if __name__ == "__main__":
-    dac = PWM_DAC(12, 500, 3.290, True)
+    
     try:
-        
+        dac = PWM_DAC(12, 500, 3.148, True)
 
         while True:
             try:

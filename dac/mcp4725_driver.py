@@ -15,7 +15,7 @@ class MCP4725:
     def deinit(self):
         self.bus.close()
 
-    def decimal_to_binary(n):
+    def decimal_to_binary(self, n):
         if n == 0:
             return "0"
         binary = []
@@ -39,12 +39,17 @@ class MCP4725:
             print(f"Число: {number}, отправленные по I2C данные: [0x{(self.address << 1):02X}, 0x{first_byte:02X}, 0x{second_byte:02X}]\n")
     
     def set_voltage(self, v):
-        n = int(self.decimal_to_binary(v))
+        if v < 0:
+            v = 0
+        elif v > self.dynamic_range:
+            v = self.dynamic_range
+            
+        a=self.dynamic_range/4095
+        n=int(v//a)
         self.set_number(n)
-
 if __name__ == "__main__":
     try:
-        dac=MCP4725(3.3)
+        dac=MCP4725(5)
 
         while True:
             try:
