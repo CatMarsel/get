@@ -14,6 +14,15 @@ class MCP4725:
     
     def deinit(self):
         self.bus.close()
+
+    def decimal_to_binary(n):
+        if n == 0:
+            return "0"
+        binary = []
+        while n > 0:
+            binary.append(str(n % 2))
+            n //= 2
+        return ''.join(binary[::-1])
     
     def set_number(self, number):
         if not isinstance(number, int):
@@ -30,7 +39,7 @@ class MCP4725:
             print(f"Число: {number}, отправленные по I2C данные: [0x{(self.address << 1):02X}, 0x{first_byte:02X}, 0x{second_byte:02X}]\n")
     
     def set_voltage(self, v):
-        n = [int(bit) for bit in bin(v)[2:].zfill(8)]
+        n = int(self.decimal_to_binary(v))
         self.set_number(n)
 
 if __name__ == "__main__":
@@ -39,7 +48,7 @@ if __name__ == "__main__":
 
         while True:
             try:
-                voltage = float(input("Enter the voltage: "))
+                voltage = int(input("Enter the voltage: "))
                 dac.set_voltage(voltage)
 
             except ValueError:
